@@ -47,6 +47,40 @@ app.get("/assignments/:assignmentsId", function (req, res) {
   });
 });
 
+app.delete("/assignments/:assignmentsId", function (req, res) {
+  let assignmentsFromClient = Number(req.params.assignmentsId);
+  const assignmentsExists = assignmentsMogDatabase.some(
+    (item) => item.id === assignmentsFromClient
+  );
+  if (!assignmentsExists) {
+    return res.json({
+      message: "Cannot delete , No data available!",
+    });
+  }
+  const newAssignment = assignmentsMogDatabase.filter((item) => {
+    return item.id !== assignmentsFromClient;
+  });
+  assignmentsMogDatabase = newAssignment;
+  return res.json({
+    message: `Assignment Id : ${assignmentsFromClient}  has been deleted successfully`,
+  });
+});
+
+app.put("/assignments/:assignmentsId", function (req, res) {
+  let assignmentsFromClient = Number(req.params.assignmentsId);
+  const assignmentsIndex = assignmentsMogDatabase.findIndex((item) => {
+    return item.id === assignmentsFromClient;
+  });
+  assignmentsMogDatabase[assignmentsIndex] = {
+    id: assignmentsFromClient,
+    ...req.body,
+  };
+  return res.json({
+    message: `Assignment Id : ${assignmentsFromClient}  has been updated successfully`,
+    date: assignmentsMogDatabase[assignmentsFromClient - 1],
+  });
+});
+
 app.listen(port, () => {
   console.log(`this sever is running at ${port}`);
 });
