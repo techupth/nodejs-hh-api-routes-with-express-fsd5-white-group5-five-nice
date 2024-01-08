@@ -2,8 +2,10 @@
 import express from "express";
 
 import { assignments } from "./data/assignments.js";
+import { comments } from "./data/comments.js";
 
 let assignmentsMogDatabase = assignments;
+let commentsMogDatabase = comments;
 
 const app = express();
 const port = 3000;
@@ -78,6 +80,30 @@ app.put("/assignments/:assignmentsId", function (req, res) {
   return res.json({
     message: `Assignment Id : ${assignmentsFromClient}  has been updated successfully`,
     date: assignmentsMogDatabase[assignmentsFromClient - 1],
+  });
+});
+
+app.get("/assignments/:assignmentsId/comments", function (req, res) {
+  let assignmentsFromClient = Number(req.params.assignmentsId);
+  let commentsData = commentsMogDatabase.filter(
+    (item) => item.assignmentId === assignmentsFromClient
+  );
+  return res.json({
+    message: "Complete fetching comments",
+    data: commentsData,
+  });
+});
+
+app.post("/assignments/:assignmentsId/comments", function (req, res) {
+  let assignmentsFromClient = Number(req.params.assignmentsId);
+  commentsMogDatabase.push({
+    id: commentsMogDatabase[commentsMogDatabase.length - 1].id + 1,
+    assignmentId: assignmentsFromClient,
+    ...req.body,
+  });
+  return res.json({
+    message: "New comment has been created successfully",
+    data: commentsMogDatabase[commentsMogDatabase.length - 1],
   });
 });
 
